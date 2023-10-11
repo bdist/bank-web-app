@@ -41,7 +41,7 @@ Generate your app's unique secret key
 $ python3 -c 'import secrets; print(secrets.token_hex())'
 ```
 
-Set the environment variable 
+Set the environment variable
 
 ```bash
 $ heroku config:set FLASK_SECRET_KEY=your_key_from_the_previous_step
@@ -66,3 +66,7 @@ $ git push heroku main
 Take notice of the output of the previous command. It should tell you whether the app was sucessfuly deployed or not. Congratulations!
 
 8. Open the `appname` index page at https://appname.herokuapps.com/
+
+## Credits
+
+Flavio Martins
