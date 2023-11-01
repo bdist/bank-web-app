@@ -5,15 +5,8 @@ import os
 from logging.config import dictConfig
 
 import psycopg
-from flask import flash
-from flask import Flask
-from flask import jsonify
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from psycopg.rows import namedtuple_row
-
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://db:db@postgres/db")
