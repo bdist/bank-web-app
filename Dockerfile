@@ -14,7 +14,7 @@ ENV PYTHONUNBUFFERED=1
 COPY ./requirements.txt /app/requirements.txt
 
 # Install the required python dependencies
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 WORKDIR /app
 
