@@ -5,6 +5,7 @@
 
 app = "bdist-bankapp"
 primary_region = "mad"
+swap_size_mb = 256
 
 [build]
 
