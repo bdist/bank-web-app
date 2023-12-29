@@ -8,8 +8,9 @@ import psycopg
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from psycopg.rows import namedtuple_row
 
-# postgres://{user}:{password}@{hostname}:{port}/{database-name}
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://db:db@postgres/db")
+# Use the DATABASE_URL environment variable if it exists, otherwise use the default.
+# Use the format postgres://username:password@hostname/database_name to connect to the database.
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank")
 
 dictConfig(
     {
