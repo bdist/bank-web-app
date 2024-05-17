@@ -95,6 +95,9 @@ def account_update_view(account_number):
             ).fetchone()
             log.debug(f"Found {cur.rowcount} rows.")
 
+    # At the end of the `connection()` context, the transaction is committed
+    # or rolled back, and the connection returned to the pool.
+
     return render_template("account/update.html", account=account)
 
 
@@ -124,7 +127,12 @@ def account_update_save(account_number):
                     """,
                     {"account_number": account_number, "balance": balance},
                 )
-            conn.commit()
+                # The result of this statement is persisted immediately by the database
+                # because the connection is in autocommit mode.
+
+        # The connection is returned to the pool at the end of the `connection()` context but,
+        # because it is not in a transaction state, no COMMIT is executed.
+
         return redirect(url_for("account_index"))
 
 
@@ -134,14 +142,29 @@ def account_delete(account_number):
 
     with pool.connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(
-                """
-                DELETE FROM account
-                WHERE account_number = %(account_number)s;
-                """,
-                {"account_number": account_number},
-            )
-        conn.commit()
+            with conn.transaction():
+                # BEGIN is executed, a transaction started
+                cur.execute(
+                    """
+                    DELETE FROM depositor
+                    WHERE account_number = %(account_number)s;
+                    """,
+                    {"account_number": account_number},
+                )
+                cur.execute(
+                    """
+                    DELETE FROM account
+                    WHERE account_number = %(account_number)s;
+                    """,
+                    {"account_number": account_number},
+                )
+                # These two operations run atomically in the same transaction
+
+        # COMMIT is executed at the end of the block.
+        # The connection is in idle state again.
+
+    # The connection is returned to the pool at the end of the `connection()` context
+
     return redirect(url_for("account_index"))
 
 
