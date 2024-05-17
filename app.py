@@ -4,13 +4,27 @@
 import os
 from logging.config import dictConfig
 
-import psycopg
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from psycopg.rows import namedtuple_row
+from psycopg_pool import ConnectionPool
 
 # Use the DATABASE_URL environment variable if it exists, otherwise use the default.
 # Use the format postgres://username:password@hostname/database_name to connect to the database.
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank")
+
+pool = ConnectionPool(
+    conninfo=DATABASE_URL,
+    kwargs={
+        "autocommit": True,  # If True don’t start transactions automatically.
+        "row_factory": namedtuple_row,
+    },
+    min_size=4,
+    max_size=10,
+    open=True,
+    # check=ConnectionPool.check_connection,
+    name="postgres_pool",
+    timeout=5,
+)
 
 dictConfig(
     {
@@ -50,8 +64,8 @@ def is_decimal(s):
 def account_index():
     """Show all the accounts, most recent first."""
 
-    with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
             accounts = cur.execute(
                 """
                 SELECT account_number, branch_name, balance
@@ -69,8 +83,8 @@ def account_index():
 def account_update_view(account_number):
     """Show the page to update the account balance."""
 
-    with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
             account = cur.execute(
                 """
                 SELECT account_number, branch_name, balance
@@ -100,8 +114,8 @@ def account_update_save(account_number):
     if error is not None:
         flash(error)
     else:
-        with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
-            with conn.cursor(row_factory=namedtuple_row) as cur:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
                 cur.execute(
                     """
                     UPDATE account
@@ -118,8 +132,8 @@ def account_update_save(account_number):
 def account_delete(account_number):
     """Delete the account."""
 
-    with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
             cur.execute(
                 """
                 DELETE FROM account
