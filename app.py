@@ -50,7 +50,7 @@ def is_decimal(s):
 def account_index():
     """Show all the accounts, most recent first."""
 
-    with psycopg.connect(conninfo=DATABASE_URL) as conn:
+    with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
             accounts = cur.execute(
                 """
@@ -69,7 +69,7 @@ def account_index():
 def account_update_view(account_number):
     """Show the page to update the account balance."""
 
-    with psycopg.connect(conninfo=DATABASE_URL) as conn:
+    with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
             account = cur.execute(
                 """
@@ -100,7 +100,7 @@ def account_update_save(account_number):
     if error is not None:
         flash(error)
     else:
-        with psycopg.connect(conninfo=DATABASE_URL) as conn:
+        with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
                 cur.execute(
                     """
@@ -118,7 +118,7 @@ def account_update_save(account_number):
 def account_delete(account_number):
     """Delete the account."""
 
-    with psycopg.connect(conninfo=DATABASE_URL) as conn:
+    with psycopg.connect(conninfo=DATABASE_URL, autocommit=True) as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cur.execute(
                 """
