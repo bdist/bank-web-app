@@ -8,24 +8,6 @@ from flask import Flask, flash, jsonify, redirect, render_template, request, url
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
-# Use the DATABASE_URL environment variable if it exists, otherwise use the default.
-# Use the format postgres://username:password@hostname/database_name to connect to the database.
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank")
-
-pool = ConnectionPool(
-    conninfo=DATABASE_URL,
-    kwargs={
-        "autocommit": True,  # If True don’t start transactions automatically.
-        "row_factory": namedtuple_row,
-    },
-    min_size=4,
-    max_size=10,
-    open=True,
-    # check=ConnectionPool.check_connection,
-    name="postgres_pool",
-    timeout=5,
-)
-
 dictConfig(
     {
         "version": 1,
@@ -48,6 +30,24 @@ dictConfig(
 app = Flask(__name__)
 app.config.from_prefixed_env()
 log = app.logger
+
+# Use the DATABASE_URL environment variable if it exists, otherwise use the default.
+# Use the format postgres://username:password@hostname/database_name to connect to the database.
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank")
+
+pool = ConnectionPool(
+    conninfo=DATABASE_URL,
+    kwargs={
+        "autocommit": True,  # If True don’t start transactions automatically.
+        "row_factory": namedtuple_row,
+    },
+    min_size=4,
+    max_size=10,
+    open=True,
+    # check=ConnectionPool.check_connection,
+    name="postgres_pool",
+    timeout=5,
+)
 
 
 def is_decimal(s):
