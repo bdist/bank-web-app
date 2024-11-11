@@ -29,6 +29,8 @@ dictConfig(
     }
 )
 
+RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+
 app = Flask(__name__)
 app.config.from_prefixed_env()
 log = app.logger
@@ -36,7 +38,7 @@ limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=["200 per day", "50 per hour"],
-    storage_uri="redis://redis:6379/",
+    storage_uri=RATELIMIT_STORAGE_URI,
 )
 
 # Use the DATABASE_URL environment variable if it exists, otherwise use the default.
