@@ -5,6 +5,8 @@ import os
 from logging.config import dictConfig
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
@@ -30,6 +32,12 @@ dictConfig(
 app = Flask(__name__)
 app.config.from_prefixed_env()
 log = app.logger
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="redis://redis:6379/",
+)
 
 # Use the DATABASE_URL environment variable if it exists, otherwise use the default.
 # Use the format postgres://username:password@hostname/database_name to connect to the database.
@@ -61,6 +69,7 @@ def is_decimal(s):
 
 @app.route("/", methods=("GET",))
 @app.route("/accounts", methods=("GET",))
+@limiter.limit("1 per second")
 def account_index():
     """Show all the accounts, most recent first."""
 
@@ -80,6 +89,7 @@ def account_index():
 
 
 @app.route("/accounts/<account_number>/update", methods=("GET",))
+@limiter.limit("1 per second")
 def account_update_view(account_number):
     """Show the page to update the account balance."""
 
@@ -169,6 +179,7 @@ def account_delete(account_number):
 
 
 @app.route("/ping", methods=("GET",))
+@limiter.exempt
 def ping():
     log.debug("ping!")
     return jsonify({"message": "pong!", "status": "success"})
