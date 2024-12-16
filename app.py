@@ -127,7 +127,7 @@ def account_update_save(account_number):
         error = "Balance is required to be decimal."
 
     if error is not None:
-        flash(error)
+        raise ValueError(error)
     else:
         with pool.connection() as conn:
             with conn.cursor() as cur:
