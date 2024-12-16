@@ -4,6 +4,7 @@
 import os
 from logging.config import dictConfig
 
+from decimal import Decimal
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -61,9 +62,9 @@ pool = ConnectionPool(
 
 
 def is_decimal(s):
-    """Returns True if string is a parseable float number."""
+    """Returns True if string is a parseable Decimal number."""
     try:
-        float(s)
+        Decimal(s)
         return True
     except ValueError:
         return False
@@ -125,6 +126,8 @@ def account_update_save(account_number):
         error = "Balance is required."
     if not is_decimal(balance):
         error = "Balance is required to be decimal."
+    if Decimal(balance) < 0:
+        error = "Balance is required to be positive."
 
     if error is not None:
         raise ValueError(error)
