@@ -4,7 +4,7 @@
 import os
 from logging.config import dictConfig
 
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -66,7 +66,7 @@ def is_decimal(s):
     try:
         Decimal(s)
         return True
-    except ValueError:
+    except InvalidOperation:
         return False
 
 
@@ -120,35 +120,32 @@ def account_update_save(account_number):
 
     balance = request.form["balance"]
 
-    error = None
-
     if not balance:
-        error = "Balance is required."
+        raise ValueError("Balance is required.")
+    
     if not is_decimal(balance):
-        error = "Balance is required to be decimal."
+        raise ValueError("Balance is required to be decimal.")
+
     if Decimal(balance) < 0:
-        error = "Balance is required to be positive."
+        raise ValueError("Balance is required to be positive.")
 
-    if error is not None:
-        raise ValueError(error)
-    else:
-        with pool.connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE account
-                    SET balance = %(balance)s
-                    WHERE account_number = %(account_number)s;
-                    """,
-                    {"account_number": account_number, "balance": balance},
-                )
-                # The result of this statement is persisted immediately by the database
-                # because the connection is in autocommit mode.
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE account
+                SET balance = %(balance)s
+                WHERE account_number = %(account_number)s;
+                """,
+                {"account_number": account_number, "balance": balance},
+            )
+            # The result of this statement is persisted immediately by the database
+            # because the connection is in autocommit mode.
 
-        # The connection is returned to the pool at the end of the `connection()` context but,
-        # because it is not in a transaction state, no COMMIT is executed.
+    # The connection is returned to the pool at the end of the `connection()` context but,
+    # because it is not in a transaction state, no COMMIT is executed.
 
-        return redirect(url_for("account_index"))
+    return redirect(url_for("account_index"))
 
 
 @app.route("/accounts/<account_number>/delete", methods=("POST",))
