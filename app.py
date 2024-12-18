@@ -2,9 +2,9 @@
 # Copyright (c) BDist Development Team
 # Distributed under the terms of the Modified BSD License.
 import os
+from decimal import Decimal, InvalidOperation
 from logging.config import dictConfig
 
-from decimal import Decimal, InvalidOperation
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -122,7 +122,7 @@ def account_update_save(account_number):
 
     if not balance:
         raise ValueError("Balance is required.")
-    
+
     if not is_decimal(balance):
         raise ValueError("Balance is required to be decimal.")
 
