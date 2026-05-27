@@ -1,1 +1,1 @@
-web: gunicorn wsgi:app --workers 2 --log-file -
+web: gunicorn --config gunicorn.conf.py
