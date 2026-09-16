@@ -42,6 +42,11 @@ limiter = Limiter(
     storage_uri=RATELIMIT_STORAGE_URI,
 )
 
+
+# PGAPPNAME is a standard libpq setting and applies when DATABASE_URL does not
+# specify application_name.
+os.environ.setdefault("PGAPPNAME", "bank-web-app")
+
 # Use the DATABASE_URL environment variable if it exists, otherwise use the default.
 # Use the format postgres://username:password@hostname/database_name to connect to the database.
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank")
