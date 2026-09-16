@@ -8,6 +8,7 @@ from logging.config import dictConfig
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from psycopg.conninfo import make_conninfo
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
@@ -43,13 +44,12 @@ limiter = Limiter(
 )
 
 
-# PGAPPNAME is a standard libpq setting and applies when DATABASE_URL does not
-# specify application_name.
-os.environ.setdefault("PGAPPNAME", "bank-web-app")
-
 # Use the DATABASE_URL environment variable if it exists, otherwise use the default.
 # Use the format postgres://username:password@hostname/database_name to connect to the database.
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank")
+DATABASE_URL = make_conninfo(
+    os.environ.get("DATABASE_URL", "postgres://bank:bank@postgres/bank"),
+    application_name=os.environ.get("PGAPPNAME", "bank-web-app"),
+)
 
 pool = ConnectionPool(
     conninfo=DATABASE_URL,
