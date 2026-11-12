@@ -10,16 +10,18 @@ dependencies = [
     { name = "flask" },
     { name = "flask-limiter", extra = ["redis"] },
     { name = "gunicorn" },
-    { name = "psycopg", extra = ["binary", "pool"] },
+    { name = "psycopg", extra = ["pool"] },
 ]
 
 [package.optional-dependencies]
 fast = [
     { name = "gunicorn", extra = ["fast"] },
+    { name = "psycopg", extra = ["c"] },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "psycopg", extra = ["binary"] },
     { name = "werkzeug" },
 ]
 
@@ -29,12 +31,16 @@ requires-dist = [
     { name = "flask-limiter", extras = ["redis"], specifier = ">=4.1.1" },
     { name = "gunicorn", specifier = ">=26.2.0" },
     { name = "gunicorn", extras = ["fast"], marker = "extra == 'fast'", specifier = ">=26.2.0" },
-    { name = "psycopg", extras = ["binary", "pool"], specifier = ">=3.3.8" },
+    { name = "psycopg", extras = ["c"], marker = "extra == 'fast'", specifier = ">=3.3.8" },
+    { name = "psycopg", extras = ["pool"], specifier = ">=3.3.8" },
 ]
 provides-extras = ["fast"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "werkzeug", specifier = ">=3.1.9" }]
+dev = [
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.8" },
+    { name = "werkzeug", specifier = ">=3.1.9" },
+]
 
 [[package]]
 name = "blinker"
@@ -298,6 +304,9 @@ wheels = [
 binary = [
     { name = "psycopg-binary", marker = "implementation_name != 'pypy'" },
 ]
+c = [
+    { name = "psycopg-c", marker = "implementation_name != 'pypy'" },
+]
 pool = [
     { name = "psycopg-pool" },
 ]
@@ -341,6 +350,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/68/8a/7ff05b083c676024beb549863a19d59b205931010ec7f3a12aadf5de9901/psycopg_binary-3.3.8-cp315-cp315-musllinux_1_2_x86_64.whl", hash = "sha256:c2154bd84cf20148d9a59e3ade04f0f754462b96cfac91d54d76ef33af7946e5", size = 4341050, upload-time = "2026-11-04T09:44:21.257Z" },
     { url = "https://files.pythonhosted.org/packages/59/a7/58ab2cf0a6da11d5c2b00d524f5d5b114e2e6359e629d34360cf57a22e20/psycopg_binary-3.3.8-cp315-cp315-win_amd64.whl", hash = "sha256:0332e83c2e78b1c8c00c1095688f9b332bdde9d5e9d61b8ce1cdcaf716a19b9e", size = 3716321, upload-time = "2026-11-04T09:44:24.631Z" },
 ]
+
+[[package]]
+name = "psycopg-c"
+version = "3.3.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/23/0074f50899d773aae857af496745cd898da868f8f2d9415591d51c391cec/psycopg_c-3.3.8.tar.gz", hash = "sha256:af81a99b02600e6c2cdf468509c04bb8208500ea60d63f70616e32ea9cb2758f", size = 700571, upload-time = "2026-11-04T09:44:27.694Z" }
 
 [[package]]
 name = "psycopg-pool"
