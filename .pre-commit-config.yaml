@@ -42,6 +42,7 @@ repos:
         types_or:
           [javascript, jsx, ts, tsx, json, css, scss, markdown, yaml, html]
         args: ['--tab-width', '2', '--single-quote']
+        exclude: '^templates/'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.1
@@ -54,6 +55,16 @@ repos:
     rev: v2.30.3
     hooks:
       - id: pyproject-fmt
+
+  - repo: https://github.com/djlint/djLint
+    rev: v1.47.0
+    hooks:
+      - id: djlint-reformat-jinja
+        files: "\\.html"
+        types_or: ['html']
+      - id: djlint-jinja
+        files: "\\.html"
+        types_or: ['html']
 
   - repo: https://github.com/hadolint/hadolint
     rev: v2.15.1

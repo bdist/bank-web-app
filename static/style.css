@@ -136,7 +136,7 @@ input.danger {
   color: #cc2f2e;
 }
 
-input[type="submit"] {
+input[type='submit'] {
   align-self: start;
   min-width: 10em;
 }
